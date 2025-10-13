@@ -19,6 +19,6 @@ func (app *application) serverError(w http.ResponseWriter, r *http.Request, err 
 }
 
 // We can use the Error interface instead...lets see what the author says later...
-func (app *application) clientError(w http.ResponseWriter, status int) {
-	http.Error(w, http.StatusText(status), status)
-}
+// func (app *application) clientError(w http.ResponseWriter, status int) {
+// 	http.Error(w, http.StatusText(status), status)
+// }

@@ -43,7 +43,7 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Display a form for creating a new snippet...")
 }
 
-func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusCreated)
-	io.WriteString(w, "Save a new snippet")
-}
+// func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
+// 	w.WriteHeader(http.StatusCreated)
+// 	io.WriteString(w, "Save a new snippet")
+// }
