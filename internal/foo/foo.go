@@ -5,7 +5,8 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"snippetbox/internal/config"
+
+	"github.com/vibec0dr/snippetbox/internal/config"
 )
 
 func ExampleHandler(app config.Application) http.HandlerFunc {

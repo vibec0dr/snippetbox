@@ -2,13 +2,16 @@ name: snippetbox
 
 services:
   db:
-    image: mysql
+    build:
+      context: docker/mysql
+      dockerfile: Dockerfile
     restart: always
-    env_file:
-      - .env
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 1m30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
