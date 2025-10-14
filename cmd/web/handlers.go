@@ -1,11 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
-	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/vibec0dr/snippetbox/internal/models"
 )
 
 func (app application) home(w http.ResponseWriter, r *http.Request) {
@@ -31,6 +33,26 @@ func (app application) home(w http.ResponseWriter, r *http.Request) {
 
 func (app application) snippetView(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	snippet, err := app.snippets.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			http.NotFound(w, r)
+		} else {
+			app.serverError(w, r, err)
+		}
+		return
+	}
+
+	fmt.Fprintf(w, "%+v", snippet)
+}
+
+func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -39,11 +61,17 @@ func (app application) snippetView(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Display a specific snippet with ID: %d\n", id)
 }
 
-func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Display a form for creating a new snippet...")
-}
+func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
+	// dummy data for the moment
+	title := "0 snail"
+	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
+	expires := 7
 
-// func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
-// 	w.WriteHeader(http.StatusCreated)
-// 	io.WriteString(w, "Save a new snippet")
-// }
+	id, err := app.snippets.Insert(title, content, expires)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
+}
